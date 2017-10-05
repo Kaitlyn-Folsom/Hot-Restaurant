@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home</title>
+  <!-- Latest compiled and minified CSS & JS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="jumbotron">
+      <h1><span class="glyphicon glyphicon-fire"></span>  Hot Restaurant</h1>
+      <hr>
+        <h3>Current Reservations and Waiting List</h3>
+      <br>
+      <a href="/reserv"><button type="button" class="btn btn-danger btn-lg">Make Reservation</button>
+      <a href="/"><button type="button" class="btn btn-danger btn-lg"> Home</button></a>
+    </div>
+
+
+  <div class="row">
+
+      <div class="col-lg-12">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">Current Reservations</h4>
+          </div>
+            <div class="panel-body" id="tableSection">
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h4 class="panel-title">Wait List</h4>
+          </div>
+          <div class="panel-body" id="waitlistSection">
+          </div>
+        </div>
+
+      </div><!--End Col-->
+  </div><!--End Row-->
+
+  <footer class="footer">
+      <div class="container">
+          <p><a href="/api/reservList">API Table Link</a> | <a href="/api/waitlist">API Wait List</a></p>
+      </div>
+    </footer>
+
+  </div><!--End Container-->
+
+
+<script type="text/javascript">
+
+  function runTableQuery(){
+    var currentURL = window.location.origin;
+    $.ajax({url: currentURL + "/api/tables", method: "GET"})
+      .done(function(tableData) {
+          $("#tableSection").empty();
+          $("#waitlistSection").empty();
+        // Loop through and display each of the customers
+        for (var i=0; i<tableData.length && i < 5; i++){
+          // Create the HTML Well (Section) and Add the table content for each reserved table
+          var tableSection = $("<div>");
+          tableSection.addClass('well');
+          tableSection.attr('id', 'tableWell-' + i+1)
+          $('#tableSection').append(tableSection);
+          var tableNumber = i + 1;
+          // Then display the remaining fields in the HTML (Section Name, Date, URL)
+          $("#tableWell-"+ i+1).append("<h3>" + tableNumber + " | " + tableData[i].name + "</h3>");
+        }
+        
+        if (tableData.length > 4) {
+          runWaitListQuery(tableData);
+        }
+      });
+  }//End runTableQuery function
+
+  function runWaitListQuery(tableData){
+        // Loop through and display each of the customers
+        for (var i=5; i < tableData.length; i++){
+          // Create the HTML Well (Section) and Add the table content for each reserved table
+          var waitlistSection = $("<div>");
+          waitlistSection.addClass('well');
+          waitlistSection.attr('id', 'waitlistWell-' + i+1)
+          $('#waitlistSection').append(waitlistSection);
+          var tableNumber = i + 1;
+          // Then display the remaining fields in the HTML (Section Name, Date, URL
+          $("#waitlistWell-"+ i+1).append("<h3>" + tableNumber + " | " + tableData[i].name + "</h3>");
+        }
+  }
+
+  runTableQuery();
+
+</script>
+
+</body>
+</html>
